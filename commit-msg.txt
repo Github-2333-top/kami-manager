@@ -1,6 +1,5 @@
-fix: prevent ColorPicker input from losing focus while typing
+fix: color picker dropdown not showing
 
-- Remove currentRgb and currentHex from useEffect dependencies
-- These derived values created new object references each render
-- Now only depend on primitive values (hue, saturation, brightness, inputType)
-- Compute RGB/HEX inside useEffect to avoid stale closure issues
+- Remove overflow:hidden from addForm and editForm
+- This was hiding the absolutely positioned color picker dropdown
+- Add position:relative for proper dropdown positioning

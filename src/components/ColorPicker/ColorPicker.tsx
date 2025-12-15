@@ -117,22 +117,19 @@ export function ColorPicker({ color, onChange, onClose }: ColorPickerProps) {
   const currentRgb = hsvToRgb(hue, saturation, brightness)
   const currentHex = rgbToHex(...currentRgb)
 
-  // Update input value when color changes internally (only from HSV changes, not from typing)
+  // Update input value when color changes internally
   useEffect(() => {
-    const [r, g, b] = hsvToRgb(hue, saturation, brightness)
-    const hex = rgbToHex(r, g, b)
-    
     if (inputType === 'hex') {
-      setInputValue(hex)
+      setInputValue(currentHex)
     } else if (inputType === 'rgb') {
-      setInputValue(`rgb(${r}, ${g}, ${b})`)
+      setInputValue(`rgb(${currentRgb.join(', ')})`)
     } else {
-      const [h, s, v] = rgbToHsv(r, g, b)
+      const [h, s, v] = rgbToHsv(...currentRgb)
       const l = v * (1 - s / 2)
       const sl = l === 0 || l === 1 ? 0 : (v - l) / Math.min(l, 1 - l)
       setInputValue(`hsl(${Math.round(h)}, ${Math.round(sl * 100)}%, ${Math.round(l * 100)}%)`)
     }
-  }, [hue, saturation, brightness, inputType])
+  }, [hue, saturation, brightness, inputType, currentHex, currentRgb])
 
   // Notify parent of color change
   useEffect(() => {
@@ -335,4 +332,3 @@ export function ColorPicker({ color, onChange, onClose }: ColorPickerProps) {
     </motion.div>
   )
 }
-
