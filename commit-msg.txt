@@ -1,7 +1,8 @@
-feat: add random card pick feature
+feat: add advanced color picker with color wheel
 
-- Add random pick button in toolbar
-- Pick random unused card from selected category
-- Copy card code to clipboard automatically
-- Mark picked card as used
-- Show available unused count badge on button
+- Add ColorPicker component with HSV color wheel
+- Support HEX, RGB, HSL color input formats
+- Add RGB sliders for fine-tuning
+- Include preset colors for quick selection
+- Replace simple color buttons in CategoryTabs
+- Real-time color preview and conversion

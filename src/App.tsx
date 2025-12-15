@@ -139,12 +139,6 @@ function App() {
       // Mark as used
       await updateCard(pickedCard.id, { isUsed: true })
       
-      const categoryName = selectedCategory === null 
-        ? '全部' 
-        : selectedCategory === 'uncategorized'
-          ? '未分类'
-          : categories.find(c => c.id === selectedCategory)?.name || ''
-      
       showToast('success', `已随机取卡并复制: ${pickedCard.code.slice(0, 20)}${pickedCard.code.length > 20 ? '...' : ''}`)
     } catch {
       showToast('error', '随机取卡失败')

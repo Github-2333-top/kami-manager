@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, X, Check, Edit3, Trash2 } from 'lucide-react'
+import { Plus, X, Check, Edit3, Trash2, Palette } from 'lucide-react'
 import type { Category } from '../../types'
+import { ColorPicker } from '../ColorPicker'
 import styles from './CategoryTabs.module.css'
 
 interface CategoryTabsProps {
@@ -13,7 +14,7 @@ interface CategoryTabsProps {
   onDeleteCategory: (id: string) => void
 }
 
-const PRESET_COLORS = [
+const DEFAULT_COLORS = [
   '#ef4444', '#f97316', '#f59e0b', '#eab308', 
   '#84cc16', '#22c55e', '#10b981', '#14b8a6',
   '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1',
@@ -31,16 +32,19 @@ export function CategoryTabs({
   const [isAdding, setIsAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [newName, setNewName] = useState('')
-  const [newColor, setNewColor] = useState(PRESET_COLORS[0])
+  const [newColor, setNewColor] = useState(DEFAULT_COLORS[Math.floor(Math.random() * DEFAULT_COLORS.length)])
   const [editName, setEditName] = useState('')
   const [editColor, setEditColor] = useState('')
+  const [showNewColorPicker, setShowNewColorPicker] = useState(false)
+  const [showEditColorPicker, setShowEditColorPicker] = useState(false)
 
   const handleAddSubmit = () => {
     if (newName.trim()) {
       onAddCategory(newName.trim(), newColor)
       setNewName('')
-      setNewColor(PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)])
+      setNewColor(DEFAULT_COLORS[Math.floor(Math.random() * DEFAULT_COLORS.length)])
       setIsAdding(false)
+      setShowNewColorPicker(false)
     }
   }
 
@@ -48,13 +52,20 @@ export function CategoryTabs({
     setEditingId(category.id)
     setEditName(category.name)
     setEditColor(category.color)
+    setShowEditColorPicker(false)
   }
 
   const handleEditSubmit = () => {
     if (editingId && editName.trim()) {
       onUpdateCategory(editingId, { name: editName.trim(), color: editColor })
       setEditingId(null)
+      setShowEditColorPicker(false)
     }
+  }
+
+  const handleEditCancel = () => {
+    setEditingId(null)
+    setShowEditColorPicker(false)
   }
 
   const handleDelete = (id: string) => {
@@ -65,6 +76,14 @@ export function CategoryTabs({
       }
     }
   }
+
+  const handleNewColorChange = useCallback((color: string) => {
+    setNewColor(color)
+  }, [])
+
+  const handleEditColorChange = useCallback((color: string) => {
+    setEditColor(color)
+  }, [])
 
   return (
     <div className={styles.container}>
@@ -106,25 +125,42 @@ export function CategoryTabs({
                     onChange={e => setEditName(e.target.value)}
                     onKeyDown={e => {
                       if (e.key === 'Enter') handleEditSubmit()
-                      if (e.key === 'Escape') setEditingId(null)
+                      if (e.key === 'Escape') handleEditCancel()
                     }}
                     autoFocus
                   />
-                  <div className={styles.colorPicker}>
-                    {PRESET_COLORS.map(color => (
-                      <button
-                        key={color}
-                        className={`${styles.colorOption} ${editColor === color ? styles.colorSelected : ''}`}
-                        style={{ backgroundColor: color }}
-                        onClick={() => setEditColor(color)}
-                      />
-                    ))}
+                  <div className={styles.colorPickerWrapper}>
+                    <button
+                      className={styles.colorTrigger}
+                      style={{ backgroundColor: editColor }}
+                      onClick={() => setShowEditColorPicker(!showEditColorPicker)}
+                      title="选择颜色"
+                    >
+                      <Palette size={14} />
+                    </button>
+                    <AnimatePresence>
+                      {showEditColorPicker && (
+                        <>
+                          <div 
+                            className={styles.colorPickerOverlay} 
+                            onClick={() => setShowEditColorPicker(false)} 
+                          />
+                          <div className={styles.colorPickerDropdown}>
+                            <ColorPicker
+                              color={editColor}
+                              onChange={handleEditColorChange}
+                              onClose={() => setShowEditColorPicker(false)}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </AnimatePresence>
                   </div>
                   <div className={styles.editActions}>
                     <button className={styles.confirmBtn} onClick={handleEditSubmit}>
                       <Check size={14} />
                     </button>
-                    <button className={styles.cancelEditBtn} onClick={() => setEditingId(null)}>
+                    <button className={styles.cancelEditBtn} onClick={handleEditCancel}>
                       <X size={14} />
                     </button>
                   </div>
@@ -179,24 +215,41 @@ export function CategoryTabs({
                 onChange={e => setNewName(e.target.value)}
                 onKeyDown={e => {
                   if (e.key === 'Enter') handleAddSubmit()
-                  if (e.key === 'Escape') setIsAdding(false)
+                  if (e.key === 'Escape') { setIsAdding(false); setShowNewColorPicker(false) }
                 }}
                 autoFocus
               />
-              <div className={styles.colorPicker}>
-                {PRESET_COLORS.map(color => (
-                  <button
-                    key={color}
-                    className={`${styles.colorOption} ${newColor === color ? styles.colorSelected : ''}`}
-                    style={{ backgroundColor: color }}
-                    onClick={() => setNewColor(color)}
-                  />
-                ))}
+              <div className={styles.colorPickerWrapper}>
+                <button
+                  className={styles.colorTrigger}
+                  style={{ backgroundColor: newColor }}
+                  onClick={() => setShowNewColorPicker(!showNewColorPicker)}
+                  title="选择颜色"
+                >
+                  <Palette size={14} />
+                </button>
+                <AnimatePresence>
+                  {showNewColorPicker && (
+                    <>
+                      <div 
+                        className={styles.colorPickerOverlay} 
+                        onClick={() => setShowNewColorPicker(false)} 
+                      />
+                      <div className={styles.colorPickerDropdown}>
+                        <ColorPicker
+                          color={newColor}
+                          onChange={handleNewColorChange}
+                          onClose={() => setShowNewColorPicker(false)}
+                        />
+                      </div>
+                    </>
+                  )}
+                </AnimatePresence>
               </div>
               <button className={styles.confirmBtn} onClick={handleAddSubmit}>
                 <Check size={14} />
               </button>
-              <button className={styles.cancelBtn} onClick={() => setIsAdding(false)}>
+              <button className={styles.cancelBtn} onClick={() => { setIsAdding(false); setShowNewColorPicker(false) }}>
                 <X size={14} />
               </button>
             </motion.div>
@@ -216,4 +269,3 @@ export function CategoryTabs({
     </div>
   )
 }
-
