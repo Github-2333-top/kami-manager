@@ -48,6 +48,16 @@ function App() {
     return filterCards(cards, selectedCategory, filterStatus, searchQuery)
   }, [cards, selectedCategory, filterStatus, searchQuery, filterCards])
 
+  // Get unused cards in the current category for random pick
+  const unusedCardsInCategory = useMemo(() => {
+    return cards.filter(card => {
+      if (card.isUsed) return false
+      if (selectedCategory === null) return true // All categories
+      if (selectedCategory === 'uncategorized') return card.categoryId === null
+      return card.categoryId === selectedCategory
+    })
+  }, [cards, selectedCategory])
+
   const handleSelectCard = (id: string, selected: boolean) => {
     setSelectedIds(prev => {
       const next = new Set(prev)
@@ -112,6 +122,35 @@ function App() {
     }
   }
 
+  const handleRandomPick = async () => {
+    if (unusedCardsInCategory.length === 0) {
+      showToast('error', '当前分类没有未使用的卡密')
+      return
+    }
+
+    // Random pick one card
+    const randomIndex = Math.floor(Math.random() * unusedCardsInCategory.length)
+    const pickedCard = unusedCardsInCategory[randomIndex]
+
+    try {
+      // Copy to clipboard
+      await writeToClipboard(pickedCard.code)
+      
+      // Mark as used
+      await updateCard(pickedCard.id, { isUsed: true })
+      
+      const categoryName = selectedCategory === null 
+        ? '全部' 
+        : selectedCategory === 'uncategorized'
+          ? '未分类'
+          : categories.find(c => c.id === selectedCategory)?.name || ''
+      
+      showToast('success', `已随机取卡并复制: ${pickedCard.code.slice(0, 20)}${pickedCard.code.length > 20 ? '...' : ''}`)
+    } catch {
+      showToast('error', '随机取卡失败')
+    }
+  }
+
   return (
     <div className="app">
       <motion.header 
@@ -142,8 +181,10 @@ function App() {
             onFilterStatusChange={setFilterStatus}
             onImportClick={() => setShowImportModal(true)}
             onExportClick={handleExport}
+            onRandomPick={handleRandomPick}
             totalCount={cards.length}
             filteredCount={filteredCards.length}
+            unusedInCategoryCount={unusedCardsInCategory.length}
           />
 
           <CategoryTabs

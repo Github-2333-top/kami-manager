@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Upload, Download, Search, Filter, ChevronDown } from 'lucide-react'
+import { Upload, Download, Search, Filter, ChevronDown, Shuffle } from 'lucide-react'
 import type { FilterStatus } from '../../types'
 import styles from './Toolbar.module.css'
 
@@ -11,8 +11,10 @@ interface ToolbarProps {
   onFilterStatusChange: (status: FilterStatus) => void
   onImportClick: () => void
   onExportClick: (includeInfo: boolean) => void
+  onRandomPick: () => void
   totalCount: number
   filteredCount: number
+  unusedInCategoryCount: number
 }
 
 export function Toolbar({
@@ -22,8 +24,10 @@ export function Toolbar({
   onFilterStatusChange,
   onImportClick,
   onExportClick,
+  onRandomPick,
   totalCount,
-  filteredCount
+  filteredCount,
+  unusedInCategoryCount
 }: ToolbarProps) {
   const [showFilterMenu, setShowFilterMenu] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
@@ -78,6 +82,21 @@ export function Toolbar({
             </>
           )}
         </div>
+
+        <motion.button 
+          className={styles.randomBtn}
+          onClick={onRandomPick}
+          disabled={unusedInCategoryCount === 0}
+          whileHover={{ scale: unusedInCategoryCount > 0 ? 1.02 : 1 }}
+          whileTap={{ scale: unusedInCategoryCount > 0 ? 0.98 : 1 }}
+          title={unusedInCategoryCount > 0 ? `从当前分类随机取卡 (${unusedInCategoryCount}张可用)` : '当前分类没有未使用的卡密'}
+        >
+          <Shuffle size={18} />
+          <span>随机取卡</span>
+          {unusedInCategoryCount > 0 && (
+            <span className={styles.randomCount}>{unusedInCategoryCount}</span>
+          )}
+        </motion.button>
       </div>
 
       <div className={styles.right}>

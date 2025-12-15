@@ -171,3 +171,41 @@
   font-weight: 600;
 }
 
+.randomBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.randomBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #d97706, #ea580c);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+.randomBtn:disabled {
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.randomCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 11px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
