@@ -1,8 +1,6 @@
-feat: add advanced color picker with color wheel
+fix: prevent ColorPicker input from losing focus while typing
 
-- Add ColorPicker component with HSV color wheel
-- Support HEX, RGB, HSL color input formats
-- Add RGB sliders for fine-tuning
-- Include preset colors for quick selection
-- Replace simple color buttons in CategoryTabs
-- Real-time color preview and conversion
+- Remove currentRgb and currentHex from useEffect dependencies
+- These derived values created new object references each render
+- Now only depend on primitive values (hue, saturation, brightness, inputType)
+- Compute RGB/HEX inside useEffect to avoid stale closure issues
