@@ -60,7 +60,7 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/你的用户名/kami.git
+git clone https://github.com/Github-2333-top/kami-manager.git
 cd kami
 
 # 安装依赖
@@ -99,7 +99,7 @@ const config = {
 
 ```bash
 # 克隆项目
-git clone https://github.com/你的用户名/kami.git
+git clone https://github.com/Github-2333-top/kami-manager.git
 cd kami
 
 # 安装前端依赖
