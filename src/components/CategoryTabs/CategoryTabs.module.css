@@ -1,0 +1,192 @@
+.container {
+  padding: 4px 0;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--color-bg-card);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.tab.active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.categoryTab.active {
+  background: var(--category-color-soft);
+  color: var(--category-color);
+  border-color: var(--category-color);
+}
+
+.categoryWrapper {
+  position: relative;
+}
+
+.colorDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tabActions {
+  display: flex;
+  gap: 2px;
+  margin-left: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.tab:hover .tabActions {
+  opacity: 1;
+}
+
+.tabActionBtn {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+}
+
+.tabActionBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px dashed var(--color-border);
+}
+
+.addBtn:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.addForm,
+.editForm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.addInput,
+.editInput {
+  width: 100px;
+  padding: 6px 10px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  font-size: 0.875rem;
+}
+
+.addInput:focus,
+.editInput:focus {
+  border-color: var(--color-primary);
+}
+
+.colorPicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 140px;
+}
+
+.colorOption {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.colorOption:hover {
+  transform: scale(1.15);
+}
+
+.colorOption.colorSelected {
+  border-color: white;
+  box-shadow: 0 0 0 2px var(--color-bg);
+}
+
+.confirmBtn,
+.cancelBtn,
+.cancelEditBtn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.confirmBtn {
+  background: var(--color-success);
+  color: white;
+}
+
+.confirmBtn:hover {
+  filter: brightness(1.1);
+}
+
+.cancelBtn,
+.cancelEditBtn {
+  background: var(--color-bg-hover);
+  color: var(--color-text-secondary);
+}
+
+.cancelBtn:hover,
+.cancelEditBtn:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.editActions {
+  display: flex;
+  gap: 4px;
+}
+

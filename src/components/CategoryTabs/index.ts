@@ -1,0 +1,2 @@
+export { CategoryTabs } from './CategoryTabs'
+

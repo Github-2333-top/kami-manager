@@ -1,0 +1,124 @@
+.announcement {
+  background: linear-gradient(135deg, var(--color-primary-soft), rgba(99, 102, 241, 0.05));
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  border-radius: var(--radius-md);
+  color: white;
+}
+
+.displayContainer {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 36px;
+}
+
+.content {
+  flex: 1;
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding-top: 6px;
+}
+
+.editBtn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+}
+
+.editBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+.editContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.textarea {
+  width: 100%;
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 70px;
+  transition: border-color 0.2s;
+}
+
+.textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.editActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.saveBtn,
+.cancelBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.saveBtn {
+  background: var(--color-primary);
+  color: white;
+}
+
+.saveBtn:hover {
+  background: var(--color-primary-hover);
+}
+
+.cancelBtn {
+  background: var(--color-bg-hover);
+  color: var(--color-text-secondary);
+}
+
+.cancelBtn:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.hint {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+

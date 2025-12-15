@@ -1,0 +1,12 @@
+feat: init kami-manager project
+
+Features:
+- Batch import/export cards from clipboard
+- Category tags with custom colors
+- Remark and user assignment for cards
+- Editable announcement banner
+- Support IndexedDB local storage
+- Support MySQL backend storage
+- Smooth Framer Motion animations
+- Modern dark theme UI
+

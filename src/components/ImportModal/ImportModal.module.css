@@ -1,0 +1,144 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.description {
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.pasteBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  border: 1px solid var(--color-primary);
+}
+
+.pasteBtn:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.textareaWrapper {
+  position: relative;
+}
+
+.textarea {
+  width: 100%;
+  padding: 16px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  line-height: 1.8;
+  resize: vertical;
+  min-height: 200px;
+  transition: border-color 0.2s;
+}
+
+.textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.preview {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--color-bg-elevated);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+}
+
+.preview strong {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--color-success-soft);
+  color: var(--color-success);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+}
+
+.result strong {
+  font-weight: 600;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
+}
+
+.cancelBtn {
+  padding: 12px 24px;
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+}
+
+.cancelBtn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.importBtn {
+  padding: 12px 24px;
+  background: var(--color-primary);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.importBtn:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.importBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+

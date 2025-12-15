@@ -1,0 +1,194 @@
+.container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 16px 24px;
+  background: linear-gradient(to top, var(--color-bg) 80%, transparent);
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 24px;
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+}
+
+.count {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.clearBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  margin-left: 12px;
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+}
+
+.clearBtn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dropdownWrapper {
+  position: relative;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+  transition: all 0.2s;
+}
+
+.actionBtn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
+}
+
+.dangerBtn {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.dangerBtn:hover {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.menuOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+}
+
+.menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  min-width: 160px;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  z-index: 100;
+  box-shadow: var(--shadow-lg);
+}
+
+.menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  text-align: left;
+}
+
+.menu button:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.categoryDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.remarkMenu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  z-index: 100;
+  box-shadow: var(--shadow-lg);
+}
+
+.remarkInput {
+  width: 200px;
+  padding: 10px 14px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+
+.remarkInput:focus {
+  border-color: var(--color-primary);
+}
+
+.remarkSubmit {
+  padding: 10px 16px;
+  background: var(--color-primary);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.remarkSubmit:hover {
+  background: var(--color-primary-hover);
+}
+
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .actions {
+    justify-content: center;
+  }
+}
+
