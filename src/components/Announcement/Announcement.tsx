@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Megaphone, Edit3, Check, X } from 'lucide-react'
+import { parseTextWithLinks } from '../../utils/textUtils'
 import styles from './Announcement.module.css'
 
 interface AnnouncementProps {
@@ -95,7 +96,15 @@ export function Announcement({ content, onUpdate }: AnnouncementProps) {
             transition={{ duration: 0.15 }}
             onDoubleClick={() => setIsEditing(true)}
           >
-            <p className={styles.content}>{content || '点击编辑按钮添加公告内容'}</p>
+            <p className={styles.content}>
+              {content ? (
+                parseTextWithLinks(content).map((part, index) => (
+                  <React.Fragment key={index}>{part}</React.Fragment>
+                ))
+              ) : (
+                '点击编辑按钮添加公告内容'
+              )}
+            </p>
             <button 
               className={styles.editBtn} 
               onClick={() => setIsEditing(true)}

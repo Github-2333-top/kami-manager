@@ -1,21 +1,24 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Clipboard, FileText, AlertCircle, CheckCircle } from 'lucide-react'
+import { Clipboard, FileText, AlertCircle, CheckCircle, Tag } from 'lucide-react'
 import { Modal } from '../Modal'
 import { readFromClipboard, parseCardCodes } from '../../utils/clipboard'
+import type { Category } from '../../types'
 import styles from './ImportModal.module.css'
 
 interface ImportModalProps {
   isOpen: boolean
   onClose: () => void
-  onImport: (codes: string[]) => Promise<{ added: number; duplicates: number }>
+  onImport: (codes: string[], categoryId?: string | null) => Promise<{ added: number; duplicates: number }>
+  categories?: Category[]
 }
 
-export function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
+export function ImportModal({ isOpen, onClose, onImport, categories = [] }: ImportModalProps) {
   const [textValue, setTextValue] = useState('')
   const [importing, setImporting] = useState(false)
   const [result, setResult] = useState<{ added: number; duplicates: number } | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
   const codes = parseCardCodes(textValue)
 
@@ -36,7 +39,7 @@ export function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
     setError(null)
     
     try {
-      const res = await onImport(codes)
+      const res = await onImport(codes, selectedCategory)
       setResult(res)
       
       if (res.added > 0) {
@@ -55,8 +58,11 @@ export function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
     setTextValue('')
     setResult(null)
     setError(null)
+    setSelectedCategory(null)
     onClose()
   }
+
+  const selectedCat = categories.find(c => c.id === selectedCategory)
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="导入卡密" width="560px">
@@ -92,6 +98,42 @@ export function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
             </div>
           )}
         </div>
+
+        {categories.length > 0 && (
+          <div className={styles.categorySection}>
+            <div className={styles.categoryLabel}>
+              <Tag size={16} />
+              <span>导入到分类（可选）</span>
+            </div>
+            <div className={styles.categoryOptions}>
+              <button
+                className={`${styles.categoryOption} ${selectedCategory === null ? styles.selected : ''}`}
+                onClick={() => setSelectedCategory(null)}
+              >
+                未分类
+              </button>
+              {categories.map(cat => (
+                <button
+                  key={cat.id}
+                  className={`${styles.categoryOption} ${selectedCategory === cat.id ? styles.selected : ''}`}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  style={{ 
+                    '--cat-color': cat.color,
+                    '--cat-color-soft': `${cat.color}20`
+                  } as React.CSSProperties}
+                >
+                  <span className={styles.categoryDot} style={{ backgroundColor: cat.color }} />
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+            {selectedCat && (
+              <p className={styles.categoryHint}>
+                卡密将导入到「{selectedCat.name}」分类
+              </p>
+            )}
+          </div>
+        )}
 
         {error && (
           <motion.div 
@@ -136,4 +178,3 @@ export function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
     </Modal>
   )
 }
-

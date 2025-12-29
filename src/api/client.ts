@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3001/api'
+const API_BASE = '/kami_manager/api/v1'  // 新API版本
 
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -10,13 +10,40 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Unknown error' }))
-    throw new Error(error.error || 'Request failed')
+    throw new Error(error.error?.message || error.error || 'Request failed')
   }
   
-  return response.json()
+  const result = await response.json()
+  // 后端返回格式为 {success: true, data: T, message: string}
+  // 提取 data 字段返回
+  if (result && typeof result === 'object' && 'data' in result) {
+    return result.data as T
+  }
+  // 如果没有 data 字段，返回整个结果（向后兼容）
+  return result as T
+}
+
+// 统计数据类型
+export interface Stats {
+  total: number
+  usedCount: number
+  unusedCount: number
+  uncategorizedCount: number
+  categoryStats: Array<{
+    id: string
+    name: string
+    color: string
+    count: number
+  }>
 }
 
 export const api = {
+  // Health Check
+  healthCheck: () => request<{ status: string; timestamp: string; database: string }>('/health'),
+  
+  // Stats
+  getStats: () => request<Stats>('/stats'),
+  
   // Settings
   getSettings: () => request<{ id: string; announcement: string }>('/settings'),
   updateAnnouncement: (announcement: string) => 
@@ -52,10 +79,10 @@ export const api = {
     updatedAt: string
   }>>('/cards'),
   
-  addCards: (codes: string[]) =>
+  addCards: (codes: string[], categoryId?: string | null) =>
     request<{ added: number; duplicates: number }>('/cards/batch', {
       method: 'POST',
-      body: JSON.stringify({ codes }),
+      body: JSON.stringify({ codes, categoryId }),
     }),
   
   updateCard: (id: string, updates: {

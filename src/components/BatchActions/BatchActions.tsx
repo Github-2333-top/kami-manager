@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Tag, FileText, Check, Trash2, X } from 'lucide-react'
+import { Tag, FileText, Check, Trash2, X, User } from 'lucide-react'
 import type { Category } from '../../types'
 import styles from './BatchActions.module.css'
 
@@ -9,6 +9,7 @@ interface BatchActionsProps {
   categories: Category[]
   onSetCategory: (categoryId: string | null) => void
   onSetRemark: (remark: string) => void
+  onSetUsedBy: (usedBy: string) => void
   onMarkUsed: (isUsed: boolean) => void
   onDelete: () => void
   onClearSelection: () => void
@@ -19,13 +20,16 @@ export function BatchActions({
   categories,
   onSetCategory,
   onSetRemark,
+  onSetUsedBy,
   onMarkUsed,
   onDelete,
   onClearSelection
 }: BatchActionsProps) {
   const [showCategoryMenu, setShowCategoryMenu] = useState(false)
   const [showRemarkInput, setShowRemarkInput] = useState(false)
+  const [showUsedByInput, setShowUsedByInput] = useState(false)
   const [remarkValue, setRemarkValue] = useState('')
+  const [usedByValue, setUsedByValue] = useState('')
 
   const handleSetRemark = () => {
     onSetRemark(remarkValue)
@@ -33,10 +37,10 @@ export function BatchActions({
     setShowRemarkInput(false)
   }
 
-  const handleDelete = () => {
-    if (confirm(`确定要删除选中的 ${selectedCount} 条卡密吗？此操作不可撤销。`)) {
-      onDelete()
-    }
+  const handleSetUsedBy = () => {
+    onSetUsedBy(usedByValue)
+    setUsedByValue('')
+    setShowUsedByInput(false)
   }
 
   return (
@@ -133,6 +137,44 @@ export function BatchActions({
                 )}
               </div>
 
+              <div className={styles.dropdownWrapper}>
+                <button
+                  className={styles.actionBtn}
+                  onClick={() => setShowUsedByInput(!showUsedByInput)}
+                >
+                  <User size={16} />
+                  设置使用者
+                </button>
+                
+                {showUsedByInput && (
+                  <>
+                    <div className={styles.menuOverlay} onClick={() => setShowUsedByInput(false)} />
+                    <motion.div 
+                      className={styles.remarkMenu}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      <input
+                        type="text"
+                        className={styles.remarkInput}
+                        placeholder="输入使用者..."
+                        value={usedByValue}
+                        onChange={e => setUsedByValue(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') handleSetUsedBy()
+                          if (e.key === 'Escape') setShowUsedByInput(false)
+                        }}
+                        autoFocus
+                      />
+                      <button className={styles.remarkSubmit} onClick={handleSetUsedBy}>
+                        确定
+                      </button>
+                    </motion.div>
+                  </>
+                )}
+              </div>
+
               <button className={styles.actionBtn} onClick={() => onMarkUsed(true)}>
                 <Check size={16} />
                 标记已用
@@ -143,7 +185,7 @@ export function BatchActions({
                 标记未用
               </button>
 
-              <button className={`${styles.actionBtn} ${styles.dangerBtn}`} onClick={handleDelete}>
+              <button className={`${styles.actionBtn} ${styles.dangerBtn}`} onClick={onDelete}>
                 <Trash2 size={16} />
                 删除
               </button>
@@ -154,4 +196,3 @@ export function BatchActions({
     </AnimatePresence>
   )
 }
-

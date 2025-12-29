@@ -5,9 +5,11 @@ import type { Card, FilterStatus } from '../types'
 export function useCards() {
   const [cards, setCards] = useState<Card[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const loadCards = useCallback(async () => {
     try {
+      setError(null)
       const data = await api.getCards()
       // Convert date strings to Date objects
       const cardsWithDates = data.map(card => ({
@@ -16,8 +18,10 @@ export function useCards() {
         updatedAt: new Date(card.updatedAt),
       }))
       setCards(cardsWithDates)
-    } catch (error) {
-      console.error('Failed to load cards:', error)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '加载卡密失败'
+      setError(message)
+      console.error('Failed to load cards:', err)
     }
   }, [])
 
@@ -29,44 +33,59 @@ export function useCards() {
     init()
   }, [loadCards])
 
-  const addCards = useCallback(async (codes: string[]) => {
+  const addCards = useCallback(async (codes: string[], categoryId?: string | null) => {
     try {
-      const result = await api.addCards(codes)
+      setError(null)
+      const result = await api.addCards(codes, categoryId)
       // Reload cards to get the new ones with server-generated IDs
       await loadCards()
       return result
-    } catch (error) {
-      console.error('Failed to add cards:', error)
-      return { added: 0, duplicates: 0 }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '添加卡密失败'
+      setError(message)
+      console.error('Failed to add cards:', err)
+      throw err
     }
   }, [loadCards])
 
   const updateCard = useCallback(async (id: string, updates: Partial<Omit<Card, 'id' | 'createdAt'>>) => {
     try {
+      setError(null)
       await api.updateCard(id, updates)
       setCards(prev => prev.map(card => 
         card.id === id ? { ...card, ...updates, updatedAt: new Date() } : card
       ))
-    } catch (error) {
-      console.error('Failed to update card:', error)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '更新卡密失败'
+      setError(message)
+      console.error('Failed to update card:', err)
+      throw err
     }
   }, [])
 
   const deleteCard = useCallback(async (id: string) => {
     try {
+      setError(null)
       await api.deleteCard(id)
       setCards(prev => prev.filter(card => card.id !== id))
-    } catch (error) {
-      console.error('Failed to delete card:', error)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '删除卡密失败'
+      setError(message)
+      console.error('Failed to delete card:', err)
+      throw err
     }
   }, [])
 
   const deleteCards = useCallback(async (ids: string[]) => {
     try {
+      setError(null)
       await api.deleteCards(ids)
       setCards(prev => prev.filter(card => !ids.includes(card.id)))
-    } catch (error) {
-      console.error('Failed to delete cards:', error)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '批量删除卡密失败'
+      setError(message)
+      console.error('Failed to delete cards:', err)
+      throw err
     }
   }, [])
 
@@ -75,12 +94,16 @@ export function useCards() {
     updates: Partial<Omit<Card, 'id' | 'createdAt'>>
   ) => {
     try {
+      setError(null)
       await api.batchUpdateCards(ids, updates)
       setCards(prev => prev.map(card => 
         ids.includes(card.id) ? { ...card, ...updates, updatedAt: new Date() } : card
       ))
-    } catch (error) {
-      console.error('Failed to batch update cards:', error)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '批量更新卡密失败'
+      setError(message)
+      console.error('Failed to batch update cards:', err)
+      throw err
     }
   }, [])
 
@@ -105,9 +128,9 @@ export function useCards() {
       // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
-        const matchesCode = card.code.toLowerCase().includes(query)
-        const matchesRemark = card.remark.toLowerCase().includes(query)
-        const matchesUsedBy = card.usedBy.toLowerCase().includes(query)
+        const matchesCode = card.code?.toLowerCase().includes(query) ?? false
+        const matchesRemark = card.remark?.toLowerCase().includes(query) ?? false
+        const matchesUsedBy = card.usedBy?.toLowerCase().includes(query) ?? false
         if (!matchesCode && !matchesRemark && !matchesUsedBy) return false
       }
 
@@ -127,9 +150,13 @@ export function useCards() {
     return cardsToExport.map(card => card.code).join('\n')
   }, [])
 
+  const clearError = useCallback(() => setError(null), [])
+
   return {
     cards,
     loading,
+    error,
+    clearError,
     addCards,
     updateCard,
     deleteCard,

@@ -7,6 +7,7 @@ import styles from './CategoryTabs.module.css'
 
 interface CategoryTabsProps {
   categories: Category[]
+  categoryCounts?: Record<string, number>
   selectedCategory: string | null
   onSelectCategory: (categoryId: string | null) => void
   onAddCategory: (name: string, color: string) => void
@@ -23,6 +24,7 @@ const DEFAULT_COLORS = [
 
 export function CategoryTabs({
   categories,
+  categoryCounts,
   selectedCategory,
   onSelectCategory,
   onAddCategory,
@@ -69,12 +71,7 @@ export function CategoryTabs({
   }
 
   const handleDelete = (id: string) => {
-    if (confirm('确定要删除这个分类吗？相关卡密将变为未分类状态。')) {
-      onDeleteCategory(id)
-      if (selectedCategory === id) {
-        onSelectCategory(null)
-      }
-    }
+    onDeleteCategory(id)
   }
 
   const handleNewColorChange = useCallback((color: string) => {
@@ -84,6 +81,10 @@ export function CategoryTabs({
   const handleEditColorChange = useCallback((color: string) => {
     setEditColor(color)
   }, [])
+
+  const getCount = (key: string) => {
+    return categoryCounts?.[key] ?? 0
+  }
 
   return (
     <div className={styles.container}>
@@ -95,6 +96,7 @@ export function CategoryTabs({
           whileTap={{ scale: 0.98 }}
         >
           全部
+          {categoryCounts && <span className={styles.count}>{getCount('all')}</span>}
         </motion.button>
         
         <motion.button
@@ -104,6 +106,7 @@ export function CategoryTabs({
           whileTap={{ scale: 0.98 }}
         >
           未分类
+          {categoryCounts && <span className={styles.count}>{getCount('uncategorized')}</span>}
         </motion.button>
 
         <AnimatePresence>
@@ -178,6 +181,7 @@ export function CategoryTabs({
                 >
                   <span className={styles.colorDot} style={{ backgroundColor: category.color }} />
                   <span>{category.name}</span>
+                  {categoryCounts && <span className={styles.count}>{getCount(category.id)}</span>}
                   <div className={styles.tabActions}>
                     <button
                       className={styles.tabActionBtn}

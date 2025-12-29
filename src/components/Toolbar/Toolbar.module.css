@@ -209,3 +209,70 @@
   font-weight: 600;
 }
 
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .left,
+  .right {
+    width: 100%;
+    justify-content: stretch;
+  }
+  
+  .left {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  
+  .primaryBtn,
+  .secondaryBtn,
+  .randomBtn {
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+  
+  .primaryBtn span,
+  .secondaryBtn span,
+  .randomBtn span {
+    display: none;
+  }
+  
+  .searchBox {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .searchInput {
+    width: 100%;
+  }
+  
+  .stats {
+    display: none;
+  }
+  
+  .filterBtn {
+    padding: 10px 12px;
+  }
+  
+  .filterBtn span {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .left {
+    gap: 8px;
+  }
+  
+  .primaryBtn,
+  .secondaryBtn,
+  .randomBtn {
+    padding: 10px 12px;
+  }
+}
+

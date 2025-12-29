@@ -202,3 +202,16 @@
   gap: 4px;
 }
 
+.count {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.tab.active .count {
+  background: rgba(255, 255, 255, 0.2);
+}
+

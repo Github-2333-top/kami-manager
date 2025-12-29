@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Announcement } from './components/Announcement'
 import { CategoryTabs } from './components/CategoryTabs'
@@ -7,6 +7,8 @@ import { CardList } from './components/CardList'
 import { BatchActions } from './components/BatchActions'
 import { ImportModal } from './components/ImportModal'
 import { Toast, type ToastData } from './components/Toast'
+import { ConfirmDialog } from './components/ConfirmDialog'
+import { Loading } from './components/Loading'
 import { useSettings } from './hooks/useSettings'
 import { useCategories } from './hooks/useCategories'
 import { useCards } from './hooks/useCards'
@@ -14,11 +16,21 @@ import { writeToClipboard } from './utils/clipboard'
 import type { FilterStatus } from './types'
 import './App.css'
 
+interface ConfirmState {
+  isOpen: boolean
+  title: string
+  message: string
+  type: 'danger' | 'warning' | 'info'
+  onConfirm: () => void
+}
+
 function App() {
-  const { settings, updateAnnouncement } = useSettings()
-  const { categories, addCategory, updateCategory, deleteCategory } = useCategories()
+  const { settings, loading: settingsLoading, error: settingsError, updateAnnouncement } = useSettings()
+  const { categories, loading: categoriesLoading, error: categoriesError, addCategory, updateCategory, deleteCategory } = useCategories()
   const { 
     cards, 
+    loading: cardsLoading,
+    error: cardsError,
     addCards, 
     updateCard, 
     deleteCard, 
@@ -34,6 +46,29 @@ function App() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [showImportModal, setShowImportModal] = useState(false)
   const [toasts, setToasts] = useState<ToastData[]>([])
+  const [confirmDialog, setConfirmDialog] = useState<ConfirmState>({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'warning',
+    onConfirm: () => {}
+  })
+
+  // 全局加载状态
+  const isLoading = settingsLoading || categoriesLoading || cardsLoading
+
+  // 显示错误提示
+  useEffect(() => {
+    if (settingsError) showToast('error', settingsError)
+  }, [settingsError])
+  
+  useEffect(() => {
+    if (categoriesError) showToast('error', categoriesError)
+  }, [categoriesError])
+  
+  useEffect(() => {
+    if (cardsError) showToast('error', cardsError)
+  }, [cardsError])
 
   const showToast = useCallback((type: ToastData['type'], message: string) => {
     const id = crypto.randomUUID()
@@ -42,6 +77,19 @@ function App() {
 
   const dismissToast = useCallback((id: string) => {
     setToasts(prev => prev.filter(t => t.id !== id))
+  }, [])
+
+  const showConfirm = useCallback((
+    title: string, 
+    message: string, 
+    onConfirm: () => void,
+    type: 'danger' | 'warning' | 'info' = 'warning'
+  ) => {
+    setConfirmDialog({ isOpen: true, title, message, type, onConfirm })
+  }, [])
+
+  const closeConfirm = useCallback(() => {
+    setConfirmDialog(prev => ({ ...prev, isOpen: false }))
   }, [])
 
   const filteredCards = useMemo(() => {
@@ -57,6 +105,18 @@ function App() {
       return card.categoryId === selectedCategory
     })
   }, [cards, selectedCategory])
+
+  // 计算每个分类的卡密数量
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      all: cards.length,
+      uncategorized: cards.filter(c => c.categoryId === null).length
+    }
+    categories.forEach(cat => {
+      counts[cat.id] = cards.filter(c => c.categoryId === cat.id).length
+    })
+    return counts
+  }, [cards, categories])
 
   const handleSelectCard = (id: string, selected: boolean) => {
     setSelectedIds(prev => {
@@ -91,6 +151,11 @@ function App() {
     showToast('success', `已为 ${selectedIds.size} 条卡密设置备注`)
   }
 
+  const handleBatchSetUsedBy = (usedBy: string) => {
+    batchUpdateCards(Array.from(selectedIds), { usedBy })
+    showToast('success', `已为 ${selectedIds.size} 条卡密设置使用者`)
+  }
+
   const handleBatchMarkUsed = (isUsed: boolean) => {
     batchUpdateCards(Array.from(selectedIds), { isUsed })
     showToast('success', `已将 ${selectedIds.size} 条卡密标记为${isUsed ? '已使用' : '未使用'}`)
@@ -98,9 +163,67 @@ function App() {
 
   const handleBatchDelete = () => {
     const count = selectedIds.size
-    deleteCards(Array.from(selectedIds))
-    setSelectedIds(new Set())
-    showToast('success', `已删除 ${count} 条卡密`)
+    showConfirm(
+      '确认删除',
+      `确定要删除选中的 ${count} 条卡密吗？此操作不可撤销。`,
+      async () => {
+        try {
+          await deleteCards(Array.from(selectedIds))
+          setSelectedIds(new Set())
+          showToast('success', `已删除 ${count} 条卡密`)
+        } catch {
+          showToast('error', '删除失败')
+        }
+        closeConfirm()
+      },
+      'danger'
+    )
+  }
+
+  // 单个卡密删除处理（使用确认弹窗）
+  const handleDeleteCard = (id: string) => {
+    showConfirm(
+      '确认删除',
+      '确定要删除这条卡密吗？此操作不可撤销。',
+      async () => {
+        try {
+          await deleteCard(id)
+          // 清理选中状态
+          setSelectedIds(prev => {
+            const next = new Set(prev)
+            next.delete(id)
+            return next
+          })
+          showToast('success', '卡密已删除')
+        } catch {
+          showToast('error', '删除失败')
+        }
+        closeConfirm()
+      },
+      'danger'
+    )
+  }
+
+  // 删除分类处理（使用确认弹窗）
+  const handleDeleteCategory = (id: string) => {
+    const category = categories.find(c => c.id === id)
+    showConfirm(
+      '确认删除分类',
+      `确定要删除分类「${category?.name || ''}」吗？相关卡密将变为未分类状态。`,
+      async () => {
+        try {
+          await deleteCategory(id)
+          if (selectedCategory === id) {
+            setSelectedCategory(null)
+          }
+          showToast('success', '分类已删除')
+        } catch {
+          showToast('error', '删除失败')
+        }
+        closeConfirm()
+      },
+      'warning'
+    )
   }
 
   const handleExport = async (includeInfo: boolean) => {
@@ -145,6 +268,11 @@ function App() {
     }
   }
 
+  // 显示加载状态
+  if (isLoading) {
+    return <Loading fullScreen text="正在加载数据..." />
+  }
+
   return (
     <div className="app">
       <motion.header 
@@ -183,11 +311,12 @@ function App() {
 
           <CategoryTabs
             categories={categories}
+            categoryCounts={categoryCounts}
             selectedCategory={selectedCategory}
             onSelectCategory={setSelectedCategory}
             onAddCategory={addCategory}
             onUpdateCategory={updateCategory}
-            onDeleteCategory={deleteCategory}
+            onDeleteCategory={handleDeleteCategory}
           />
 
           <CardList
@@ -197,7 +326,7 @@ function App() {
             onSelectCard={handleSelectCard}
             onSelectAll={handleSelectAll}
             onUpdateCard={updateCard}
-            onDeleteCard={deleteCard}
+            onDeleteCard={handleDeleteCard}
           />
         </div>
       </main>
@@ -207,6 +336,7 @@ function App() {
         categories={categories}
         onSetCategory={handleBatchSetCategory}
         onSetRemark={handleBatchSetRemark}
+        onSetUsedBy={handleBatchSetUsedBy}
         onMarkUsed={handleBatchMarkUsed}
         onDelete={handleBatchDelete}
         onClearSelection={() => setSelectedIds(new Set())}
@@ -216,6 +346,16 @@ function App() {
         isOpen={showImportModal}
         onClose={() => setShowImportModal(false)}
         onImport={addCards}
+        categories={categories}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        type={confirmDialog.type}
+        onConfirm={confirmDialog.onConfirm}
+        onCancel={closeConfirm}
       />
 
       <Toast toasts={toasts} onDismiss={dismissToast} />
