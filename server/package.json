@@ -7,7 +7,8 @@
     "start": "tsx src/index.ts",
     "build": "tsc",
     "type-check": "tsc --noEmit",
-    "create-api-key": "tsx scripts/create-api-key.ts"
+    "create-api-key": "tsx scripts/create-api-key.ts",
+    "smoke-test": "tsx scripts/smoke-test.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",

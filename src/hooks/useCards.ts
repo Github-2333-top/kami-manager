@@ -67,27 +67,29 @@ export function useCards() {
     try {
       setError(null)
       await api.deleteCard(id)
-      setCards(prev => prev.filter(card => card.id !== id))
+      // 以服务端为准，避免“前端删了但后端失败/未命中”的假象
+      await loadCards()
     } catch (err) {
       const message = err instanceof Error ? err.message : '删除卡密失败'
       setError(message)
       console.error('Failed to delete card:', err)
       throw err
     }
-  }, [])
+  }, [loadCards])
 
   const deleteCards = useCallback(async (ids: string[]) => {
     try {
       setError(null)
       await api.deleteCards(ids)
-      setCards(prev => prev.filter(card => !ids.includes(card.id)))
+      // 以服务端为准，避免“前端删了但后端失败/未命中”的假象
+      await loadCards()
     } catch (err) {
       const message = err instanceof Error ? err.message : '批量删除卡密失败'
       setError(message)
       console.error('Failed to delete cards:', err)
       throw err
     }
-  }, [])
+  }, [loadCards])
 
   const batchUpdateCards = useCallback(async (
     ids: string[], 

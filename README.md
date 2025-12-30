@@ -248,6 +248,9 @@ npm install -g pm2
 
 # 启动后端服务
 cd server
+# 安装依赖并构建（生成 dist/）
+npm install
+npm run build
 pm2 start index.js --name kami-server
 
 # 保存进程列表
@@ -290,7 +293,20 @@ server {
         alias /path/to/kami-manager/dist/index.html;
     }
 
-    # API 代理
+    # API 代理（推荐：与前端同子路径，避免前端额外配置）
+    location /kami_manager/api/v1/ {
+        proxy_pass http://127.0.0.1:14124/kami_manager/api/v1/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+
+    # API 兼容代理（可选：兼容旧脚本 /api/v1/*）
     location /api/v1/ {
         proxy_pass http://127.0.0.1:14124/api/v1/;
         proxy_http_version 1.1;
@@ -329,10 +345,10 @@ export default defineConfig({
 })
 ```
 
-同时修改 `src/api/client.ts` 中的 API 路径：
+同时确认 `src/api/client.ts` 中的 API 路径与后端一致：
 
 ```typescript
-const API_BASE = '/api/v1'
+const API_BASE = '/kami_manager/api/v1'
 ```
 
 ### 5. 环境变量 (可选)
@@ -366,10 +382,10 @@ export DB_NAME=kami_manager
 
 ```bash
 # 直接访问后端
-curl http://127.0.0.1:14124/api/v1/health
+curl http://127.0.0.1:14124/kami_manager/api/v1/health
 
 # 通过 Nginx 代理
-curl https://your-domain.com/api/v1/health
+curl https://your-domain.com/kami_manager/api/v1/health
 ```
 
 正常返回：

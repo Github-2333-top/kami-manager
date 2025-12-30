@@ -77,7 +77,7 @@ export const api = {
     isUsed: boolean
     createdAt: string
     updatedAt: string
-  }>>('/cards'),
+  }>>('/cards?include_used=1'),
   
   addCards: (codes: string[], categoryId?: string | null) =>
     request<{ added: number; duplicates: number }>('/cards/batch', {

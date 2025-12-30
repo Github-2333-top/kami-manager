@@ -138,27 +138,47 @@ function App() {
     }
   }
 
-  const handleBatchSetCategory = (categoryId: string | null) => {
-    batchUpdateCards(Array.from(selectedIds), { categoryId })
-    const categoryName = categoryId 
+  const handleBatchSetCategory = async (categoryId: string | null) => {
+    const categoryName = categoryId
       ? categories.find(c => c.id === categoryId)?.name || '未知'
       : '未分类'
-    showToast('success', `已将 ${selectedIds.size} 条卡密设为「${categoryName}」`)
+    try {
+      await batchUpdateCards(Array.from(selectedIds), { categoryId })
+      showToast('success', `已将 ${selectedIds.size} 条卡密设为「${categoryName}」`)
+    } catch (err) {
+      console.error('Batch set category failed:', err)
+      showToast('error', '批量设置分类失败')
+    }
   }
 
-  const handleBatchSetRemark = (remark: string) => {
-    batchUpdateCards(Array.from(selectedIds), { remark })
-    showToast('success', `已为 ${selectedIds.size} 条卡密设置备注`)
+  const handleBatchSetRemark = async (remark: string) => {
+    try {
+      await batchUpdateCards(Array.from(selectedIds), { remark })
+      showToast('success', `已为 ${selectedIds.size} 条卡密设置备注`)
+    } catch (err) {
+      console.error('Batch set remark failed:', err)
+      showToast('error', '批量设置备注失败')
+    }
   }
 
-  const handleBatchSetUsedBy = (usedBy: string) => {
-    batchUpdateCards(Array.from(selectedIds), { usedBy })
-    showToast('success', `已为 ${selectedIds.size} 条卡密设置使用者`)
+  const handleBatchSetUsedBy = async (usedBy: string) => {
+    try {
+      await batchUpdateCards(Array.from(selectedIds), { usedBy })
+      showToast('success', `已为 ${selectedIds.size} 条卡密设置使用者`)
+    } catch (err) {
+      console.error('Batch set usedBy failed:', err)
+      showToast('error', '批量设置使用者失败')
+    }
   }
 
-  const handleBatchMarkUsed = (isUsed: boolean) => {
-    batchUpdateCards(Array.from(selectedIds), { isUsed })
-    showToast('success', `已将 ${selectedIds.size} 条卡密标记为${isUsed ? '已使用' : '未使用'}`)
+  const handleBatchMarkUsed = async (isUsed: boolean) => {
+    try {
+      await batchUpdateCards(Array.from(selectedIds), { isUsed })
+      showToast('success', `已将 ${selectedIds.size} 条卡密标记为${isUsed ? '已使用' : '未使用'}`)
+    } catch (err) {
+      console.error('Batch mark used failed:', err)
+      showToast('error', '批量标记失败')
+    }
   }
 
   const handleBatchDelete = () => {

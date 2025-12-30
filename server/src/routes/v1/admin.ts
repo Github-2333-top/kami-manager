@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { randomUUID } from 'crypto'
 import { db } from '../../db.js'
-import { sendSuccess, sendError } from '../../utils/response.js'
+import { sendSuccess, sendError, sendNotFound } from '../../utils/response.js'
 
 const router = Router()
 
@@ -302,47 +302,6 @@ router.post('/cards/batch', async (req, res) => {
 })
 
 /**
- * PUT /api/v1/cards/:id
- * 更新单个卡密
- */
-router.put('/cards/:id', async (req, res) => {
-  try {
-    const { id } = req.params
-    const { categoryId, remark, usedBy, isUsed } = req.body
-
-    const updates: string[] = []
-    const values: any[] = []
-
-    if (categoryId !== undefined) {
-      updates.push('category_id = ?')
-      values.push(categoryId)
-    }
-    if (remark !== undefined) {
-      updates.push('remark = ?')
-      values.push(remark)
-    }
-    if (usedBy !== undefined) {
-      updates.push('used_by = ?')
-      values.push(usedBy)
-    }
-    if (isUsed !== undefined) {
-      updates.push('is_used = ?')
-      values.push(isUsed)
-    }
-
-    if (updates.length > 0) {
-      values.push(id)
-      await db.query(`UPDATE cards SET ${updates.join(', ')} WHERE id = ?`, values)
-    }
-
-    sendSuccess(res, null, '卡密更新成功')
-  } catch (error: any) {
-    console.error('更新卡密失败:', error)
-    sendError(res, 'INTERNAL_ERROR', '更新卡密失败', null, 500)
-  }
-})
-
-/**
  * PUT /api/v1/cards/batch
  * 批量更新卡密
  */
@@ -399,23 +358,53 @@ router.put('/cards/batch', async (req, res) => {
 })
 
 /**
- * DELETE /api/v1/cards/:id
- * 删除单个卡密
+ * PUT /api/v1/cards/:id
+ * 更新单个卡密
+ *
+ * 注意：必须放在 /cards/batch 之后，避免把 "batch" 误当作 :id
  */
-router.delete('/cards/:id', async (req, res) => {
+router.put('/cards/:id', async (req, res) => {
   try {
     const { id } = req.params
-    await db.query('DELETE FROM cards WHERE id = ?', [id])
-    sendSuccess(res, null, '卡密删除成功')
+    const { categoryId, remark, usedBy, isUsed } = req.body
+
+    const updates: string[] = []
+    const values: any[] = []
+
+    if (categoryId !== undefined) {
+      updates.push('category_id = ?')
+      values.push(categoryId)
+    }
+    if (remark !== undefined) {
+      updates.push('remark = ?')
+      values.push(remark)
+    }
+    if (usedBy !== undefined) {
+      updates.push('used_by = ?')
+      values.push(usedBy)
+    }
+    if (isUsed !== undefined) {
+      updates.push('is_used = ?')
+      values.push(isUsed)
+    }
+
+    if (updates.length > 0) {
+      values.push(id)
+      await db.query(`UPDATE cards SET ${updates.join(', ')} WHERE id = ?`, values)
+    }
+
+    sendSuccess(res, null, '卡密更新成功')
   } catch (error: any) {
-    console.error('删除卡密失败:', error)
-    sendError(res, 'INTERNAL_ERROR', '删除卡密失败', null, 500)
+    console.error('更新卡密失败:', error)
+    sendError(res, 'INTERNAL_ERROR', '更新卡密失败', null, 500)
   }
 })
 
 /**
  * DELETE /api/v1/cards/batch
  * 批量删除卡密
+ *
+ * 注意：必须放在 /cards/:id 之前，避免把 "batch" 误当作 :id
  */
 router.delete('/cards/batch', async (req, res) => {
   try {
@@ -428,11 +417,35 @@ router.delete('/cards/batch', async (req, res) => {
       return sendSuccess(res, { deleted: 0 }, '批量删除完成')
     }
 
-    await db.query('DELETE FROM cards WHERE id IN (?)', [ids])
-    sendSuccess(res, { deleted: ids.length }, '批量删除完成')
+    const [result] = await db.query('DELETE FROM cards WHERE id IN (?)', [ids]) as any
+    const affectedRows = (result && typeof result === 'object' && 'affectedRows' in result) ? (result as any).affectedRows : 0
+    sendSuccess(res, { deleted: affectedRows }, '批量删除完成')
   } catch (error: any) {
     console.error('批量删除卡密失败:', error)
     sendError(res, 'INTERNAL_ERROR', '批量删除卡密失败', null, 500)
+  }
+})
+
+/**
+ * DELETE /api/v1/cards/:id
+ * 删除单个卡密
+ *
+ * 注意：必须放在 /cards/batch 之后，避免把 "batch" 误当作 :id
+ */
+router.delete('/cards/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const [result] = await db.query('DELETE FROM cards WHERE id = ?', [id]) as any
+    const affectedRows = (result && typeof result === 'object' && 'affectedRows' in result) ? (result as any).affectedRows : 0
+
+    if (!affectedRows) {
+      return sendNotFound(res, '卡密不存在')
+    }
+
+    sendSuccess(res, null, '卡密删除成功')
+  } catch (error: any) {
+    console.error('删除卡密失败:', error)
+    sendError(res, 'INTERNAL_ERROR', '删除卡密失败', null, 500)
   }
 })
 

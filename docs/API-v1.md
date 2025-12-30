@@ -7,8 +7,10 @@
 ### 基础路径
 
 ```
-/api/v1
+/kami_manager/api/v1
 ```
+
+说明：服务同时兼容 `/api/v1`（旧路径），但推荐统一使用 `/kami_manager/api/v1`（与前端部署子路径一致）。
 
 ### 认证方式
 
@@ -920,7 +922,7 @@ curl -X PUT http://localhost:14124/api/v1/settings/announcement \
 ```javascript
 const axios = require('axios');
 
-const API_BASE = 'http://localhost:14124/api/v1';
+const API_BASE = 'http://localhost:14124/kami_manager/api/v1';
 const API_KEY = 'your-api-key';
 
 // 取卡操作
@@ -983,7 +985,7 @@ async function getSyncStatus(transactionId, longPoll = false) {
 ```python
 import requests
 
-API_BASE = 'http://localhost:14124/api/v1'
+API_BASE = 'http://localhost:14124/kami_manager/api/v1'
 API_KEY = 'your-api-key'
 
 def withdraw_card(category_id):
@@ -1034,7 +1036,7 @@ if __name__ == '__main__':
 ```php
 <?php
 
-$API_BASE = 'http://localhost:14124/api/v1';
+$API_BASE = 'http://localhost:14124/kami_manager/api/v1';
 $API_KEY = 'your-api-key';
 
 function withdrawCard($categoryId) {

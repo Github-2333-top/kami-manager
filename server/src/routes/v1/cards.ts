@@ -27,23 +27,52 @@ router.get('/categories', async (req, res) => {
 
 /**
  * GET /api/v1/cards?category_id={category_id}
- * 根据分类ID获取可用卡片列表（仅返回未使用的卡片）
+ * 获取卡片列表
+ *
+ * 默认：仅返回未使用的卡片（用于“取卡”场景）
+ * 管理端：传入 include_used=1/true 返回“已使用 + 未使用”全部卡片
+ *
+ * 可选参数：
+ * - category_id: 按分类过滤
+ * - include_used: 1/true 表示包含已使用卡片
+ * - is_used: true/false/1/0 明确指定只看已使用或未使用（优先级高于 include_used）
  */
 router.get('/', async (req, res) => {
   try {
     const categoryId = req.query.category_id as string | undefined
+    const includeUsedRaw = (req.query.include_used as string | undefined) ?? ''
+    const isUsedRaw = req.query.is_used as string | undefined
     const page = parseInt(req.query.page as string) || 1
     const limit = parseInt(req.query.limit as string) || 0
     const offset = (page - 1) * limit
+
+    const normalizeBool = (v: string) => {
+      const val = v.trim().toLowerCase()
+      if (val === '1' || val === 'true' || val === 'yes' || val === 'y') return true
+      if (val === '0' || val === 'false' || val === 'no' || val === 'n') return false
+      return undefined
+    }
+
+    const isUsedFilter = isUsedRaw ? normalizeBool(isUsedRaw) : undefined
+    const includeUsed = normalizeBool(includeUsedRaw) === true
 
     let query = `
       SELECT id, code, category_id as categoryId, remark, used_by as usedBy, 
              is_used as isUsed, created_at as createdAt, updated_at as updatedAt 
       FROM cards 
-      WHERE is_used = false
     `
 
     const params: any[] = []
+
+    // 使用状态过滤（优先级：is_used > include_used > 默认仅未使用）
+    if (isUsedFilter !== undefined) {
+      query += ' WHERE is_used = ?'
+      params.push(isUsedFilter)
+    } else if (!includeUsed) {
+      query += ' WHERE is_used = false'
+    } else {
+      query += ' WHERE 1=1'
+    }
 
     if (categoryId) {
       query += ' AND category_id = ?'
@@ -61,8 +90,14 @@ router.get('/', async (req, res) => {
 
     if (limit > 0) {
       // 获取总数
-      let countQuery = 'SELECT COUNT(*) as total FROM cards WHERE is_used = false'
+      let countQuery = 'SELECT COUNT(*) as total FROM cards WHERE 1=1'
       const countParams: any[] = []
+      if (isUsedFilter !== undefined) {
+        countQuery += ' AND is_used = ?'
+        countParams.push(isUsedFilter)
+      } else if (!includeUsed) {
+        countQuery += ' AND is_used = false'
+      }
       if (categoryId) {
         countQuery += ' AND category_id = ?'
         countParams.push(categoryId)

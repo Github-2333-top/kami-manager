@@ -20,7 +20,10 @@ app.use((req, res, next) => {
   next()
 })
 
-// 注册v1 API路由
+// 注册 v1 API 路由
+app.use('/kami_manager/api/v1', v1Router)
+// 兼容 Nginx rewrite：/kami_manager/api/v1/* -> /api/v1/*
+// 以及历史脚本直接访问 /api/v1/*
 app.use('/api/v1', v1Router)
 
 // 404处理
@@ -54,8 +57,9 @@ async function start() {
 
     app.listen(PORT, () => {
       console.log(`🚀 后端服务已启动: http://localhost:${PORT}`)
-      console.log(`📡 API 地址: http://localhost:${PORT}/api/v1`)
-      console.log(`\n注意: 旧API (/api/*) 已完全移除，请使用新API (/api/v1/*)\n`)
+      console.log(`📡 API 地址: http://localhost:${PORT}/kami_manager/api/v1`)
+      console.log(`📡 API 兼容地址: http://localhost:${PORT}/api/v1`)
+      console.log(`\n注意: 旧API (/api/*) 已完全移除，请使用新API (/kami_manager/api/v1/*)\n`)
     })
   } catch (error: any) {
     console.error('\n❌ 启动失败:', error.message)
