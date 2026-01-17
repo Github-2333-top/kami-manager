@@ -31,6 +31,27 @@
   background: var(--color-primary-hover);
 }
 
+.generateBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+  transition: all 0.2s ease;
+}
+
+.generateBtn:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+  transform: translateY(-1px);
+}
+
 .secondaryBtn {
   display: flex;
   align-items: center;
@@ -230,7 +251,8 @@
   
   .primaryBtn,
   .secondaryBtn,
-  .randomBtn {
+  .randomBtn,
+  .generateBtn {
     padding: 10px 14px;
     font-size: 0.875rem;
     white-space: nowrap;
@@ -238,7 +260,8 @@
   
   .primaryBtn span,
   .secondaryBtn span,
-  .randomBtn span {
+  .randomBtn span,
+  .generateBtn span {
     display: none;
   }
   
@@ -271,7 +294,8 @@
   
   .primaryBtn,
   .secondaryBtn,
-  .randomBtn {
+  .randomBtn,
+  .generateBtn {
     padding: 10px 12px;
   }
 }

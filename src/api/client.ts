@@ -113,5 +113,44 @@ export const api = {
       method: 'DELETE',
       body: JSON.stringify({ ids }),
     }),
+
+  // Generate Keys - 卡密生成
+  generateKeys: (count: number, prefix: string) =>
+    request<{
+      count: number
+      prefix: string
+      keys: string[]
+      generatedAt: string
+    }>('/generate/keys', {
+      method: 'POST',
+      body: JSON.stringify({ count, prefix }),
+    }),
+
+  writeKeysToDb: (keys: string[]) =>
+    request<{
+      totalCount: number
+      insertedCount: number
+      duplicateCount: number
+      writtenAt: string
+    }>('/generate/write', {
+      method: 'POST',
+      body: JSON.stringify({ keys }),
+    }),
+
+  checkGenerateDbStatus: () =>
+    request<{
+      externalDbConnected: boolean
+      checkedAt: string
+    }>('/generate/status'),
+
+  checkExistingKeys: (keys: string[]) =>
+    request<{
+      totalChecked: number
+      existingCount: number
+      existingKeys: string[]
+    }>('/generate/check', {
+      method: 'POST',
+      body: JSON.stringify({ keys }),
+    }),
 }
 

@@ -1,0 +1,531 @@
+.container {
+    min-height: 100vh;
+    padding: 2rem;
+    color: #fff;
+    font-family: 'Inter', system-ui, sans-serif;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  
+  .backButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #a1a1aa;
+    font-size: 0.9rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  
+  .backButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transform: translateX(-2px);
+  }
+  
+  .title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    background: linear-gradient(to right, #fff, #a1a1aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  }
+  
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .panel {
+    background: rgba(20, 20, 35, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+  }
+  
+  .panelTitle {
+    font-size: 1.1rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .formGroup {
+    margin-bottom: 1.5rem;
+  }
+  
+  .formGroup label {
+    display: block;
+    font-size: 0.9rem;
+    color: #a1a1aa;
+    margin-bottom: 0.5rem;
+  }
+  
+  .input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.2s;
+  }
+  
+  .input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    outline: none;
+  }
+  
+  .rangeWrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .range {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    -webkit-appearance: none;
+  }
+  
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #6366f1;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    transition: transform 0.2s;
+  }
+  
+  .range::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
+  
+  .numberInput {
+    width: 80px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.5rem;
+    color: #fff;
+    text-align: center;
+  }
+  
+  .formatInfo {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: rgba(99, 102, 241, 0.05);
+    border-radius: 8px;
+    border: 1px dashed rgba(99, 102, 241, 0.2);
+  }
+  
+  .formatLabel {
+    font-size: 0.8rem;
+    color: #a1a1aa;
+    margin-bottom: 0.2rem;
+  }
+  
+  .formatValue {
+    font-family: monospace;
+    color: #6366f1;
+  }
+  
+  .generateButton {
+    width: 100%;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 1rem;
+    color: #fff;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  
+  .generateButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(79, 70, 229, 0.6);
+  }
+  
+  .generateButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .generateButton::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shine 3s infinite;
+  }
+  
+  .previewBox {
+    font-family: 'JetBrains Mono', monospace;
+    color: #a1a1aa;
+    font-size: 0.9rem;
+    line-height: 2;
+  }
+  
+  .previewItem {
+    padding: 0.5rem;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.2);
+    margin-bottom: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .resultsPanel {
+    background: rgba(20, 20, 35, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 2rem;
+    backdrop-filter: blur(20px);
+  }
+  
+  .resultsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .resultsHeader h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #fff;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .actionButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  
+  .actionButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .primaryAction {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #10b981;
+  }
+  
+  .primaryAction:hover {
+    background: rgba(16, 185, 129, 0.2);
+  }
+  
+  .tableWrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th {
+    text-align: left;
+    padding: 1rem;
+    color: #a1a1aa;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    position: sticky;
+    top: 0;
+    background: rgba(20, 20, 35, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+  }
+  
+  .table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 0.9rem;
+  }
+  
+  .codeCell {
+    font-family: 'JetBrains Mono', monospace;
+    color: #a5b4fc;
+  }
+  
+  .iconButton {
+    background: transparent;
+    color: #a1a1aa;
+    padding: 0.4rem;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+  }
+  
+  .iconButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+  
+  @keyframes shine {
+    0% { left: -100%; }
+    20% { left: 100%; }
+    100% { left: 100%; }
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .spinning {
+    animation: spin 1s linear infinite;
+  }
+
+  /* Toast 通知样式 */
+  .toastContainer {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .toast {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(20, 20, 35, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    color: #fff;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    min-width: 280px;
+  }
+
+  .toast.success {
+    border-color: rgba(16, 185, 129, 0.5);
+    color: #10b981;
+  }
+
+  .toast.error {
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #ef4444;
+  }
+
+  .toast.info {
+    border-color: rgba(99, 102, 241, 0.5);
+    color: #6366f1;
+  }
+
+  .toast span {
+    flex: 1;
+    color: #fff;
+  }
+
+  .toastClose {
+    background: transparent;
+    color: #a1a1aa;
+    padding: 0.25rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+  }
+
+  .toastClose:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+
+  /* 数据库状态指示器 */
+  .dbStatus {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    font-size: 0.8rem;
+  }
+
+  .statusDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .statusDot.connected {
+    background: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  }
+
+  .statusDot.disconnected {
+    background: #ef4444;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+  }
+
+  .statusDot.checking {
+    background: #f59e0b;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+  }
+
+  .statusText {
+    color: #a1a1aa;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* 预览统计 */
+  .previewStats {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .statItem {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .statLabel {
+    font-size: 0.75rem;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .statValue {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #6366f1;
+  }
+
+  /* 响应式优化 */
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+
+    .header {
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .dbStatus {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .resultsHeader {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .actions {
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .actionButton {
+      flex: 1;
+      min-width: 120px;
+      justify-content: center;
+    }
+
+    .toastContainer {
+      left: 1rem;
+      right: 1rem;
+    }
+
+    .toast {
+      min-width: auto;
+    }
+  }
+  

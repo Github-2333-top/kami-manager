@@ -2,6 +2,7 @@ import { Router } from 'express'
 import cardsRouter from './cards.js'
 import webhooksRouter from './webhooks.js'
 import adminRouter from './admin.js'
+import generateRouter from './generate.js'
 import { authenticateApiKey, optionalAuthenticateApiKey } from '../../middleware/auth.js'
 import { createApiKeyRateLimiter } from '../../middleware/rateLimit.js'
 import { circuitBreakerMiddleware } from '../../middleware/circuitBreaker.js'
@@ -20,6 +21,9 @@ router.use('/cards', optionalAuthenticateApiKey, cardsRouter)
 
 // Webhook管理接口需要认证
 router.use('/webhooks', authenticateApiKey, webhooksRouter)
+
+// 卡密生成接口（无需认证，内部使用）
+router.use('/generate', generateRouter)
 
 // 管理接口（可选认证）
 router.use('/', optionalAuthenticateApiKey, adminRouter)

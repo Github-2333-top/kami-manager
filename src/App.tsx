@@ -9,12 +9,16 @@ import { ImportModal } from './components/ImportModal'
 import { Toast, type ToastData } from './components/Toast'
 import { ConfirmDialog } from './components/ConfirmDialog'
 import { Loading } from './components/Loading'
+import { GenerateKeys } from './pages/GenerateKeys'
 import { useSettings } from './hooks/useSettings'
 import { useCategories } from './hooks/useCategories'
 import { useCards } from './hooks/useCards'
 import { writeToClipboard } from './utils/clipboard'
 import type { FilterStatus } from './types'
 import './App.css'
+
+// 页面类型
+type PageType = 'dashboard' | 'generate'
 
 interface ConfirmState {
   isOpen: boolean
@@ -40,6 +44,9 @@ function App() {
     exportCards 
   } = useCards()
 
+  // 当前页面状态
+  const [currentPage, setCurrentPage] = useState<PageType>('dashboard')
+  
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
   const [searchQuery, setSearchQuery] = useState('')
@@ -293,6 +300,11 @@ function App() {
     return <Loading fullScreen text="正在加载数据..." />
   }
 
+  // 显示生成卡密页面
+  if (currentPage === 'generate') {
+    return <GenerateKeys onBack={() => setCurrentPage('dashboard')} />
+  }
+
   return (
     <div className="app">
       <motion.header 
@@ -324,6 +336,7 @@ function App() {
             onImportClick={() => setShowImportModal(true)}
             onExportClick={handleExport}
             onRandomPick={handleRandomPick}
+            onGenerateClick={() => setCurrentPage('generate')}
             totalCount={cards.length}
             filteredCount={filteredCards.length}
             unusedInCategoryCount={unusedCardsInCategory.length}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Upload, Download, Search, Filter, ChevronDown, Shuffle } from 'lucide-react'
+import { Upload, Download, Search, Filter, ChevronDown, Shuffle, Sparkles } from 'lucide-react'
 import type { FilterStatus } from '../../types'
 import styles from './Toolbar.module.css'
 
@@ -12,6 +12,7 @@ interface ToolbarProps {
   onImportClick: () => void
   onExportClick: (includeInfo: boolean) => void
   onRandomPick: () => void
+  onGenerateClick?: () => void
   totalCount: number
   filteredCount: number
   unusedInCategoryCount: number
@@ -25,6 +26,7 @@ export function Toolbar({
   onImportClick,
   onExportClick,
   onRandomPick,
+  onGenerateClick,
   totalCount,
   filteredCount,
   unusedInCategoryCount
@@ -50,6 +52,18 @@ export function Toolbar({
           <Upload size={18} />
           <span>导入卡密</span>
         </motion.button>
+
+        {onGenerateClick && (
+          <motion.button 
+            className={styles.generateBtn}
+            onClick={onGenerateClick}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Sparkles size={18} />
+            <span>生成卡密</span>
+          </motion.button>
+        )}
 
         <div className={styles.dropdownWrapper}>
           <motion.button 
