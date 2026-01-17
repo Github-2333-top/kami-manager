@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, Copy, Database, Download, RefreshCw, CheckCircle, AlertCircle, X } from 'lucide-react'
+import { ArrowLeft, Copy, Download, RefreshCw, CheckCircle, AlertCircle, X, Database } from 'lucide-react'
 import { TechBackground } from '../../components/TechBackground'
 import { api } from '../../api/client'
 import styles from './GenerateKeys.module.css'
@@ -23,10 +23,9 @@ export const GenerateKeys: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [generatedKeys, setGeneratedKeys] = useState<GeneratedKey[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
   const [previewKey, setPreviewKey] = useState('')
-  const [isWritingToDb, setIsWritingToDb] = useState(false)
   const [toasts, setToasts] = useState<ToastData[]>([])
   const [dbConnected, setDbConnected] = useState<boolean | null>(null)
-  const [writeProgress, setWriteProgress] = useState<string>('')
+  const [progressText, setProgressText] = useState<string>('')
 
   // 显示 Toast 消息
   const showToast = useCallback((type: ToastData['type'], message: string) => {
@@ -63,23 +62,45 @@ export const GenerateKeys: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     setPreviewKey(`${prefix}${randomPart}`)
   }, [prefix])
 
-  // 生成卡密（调用后端API）
+  // 生成卡密并自动写入数据库
   const handleGenerate = async () => {
+    if (dbConnected === false) {
+      showToast('error', '数据库未连接，无法生成卡密')
+      return
+    }
+
     setIsGenerating(true)
+    setProgressText('正在生成卡密...')
+    
     try {
+      // 第一步：生成卡密
       const result = await api.generateKeys(count, prefix)
-      const newKeys: GeneratedKey[] = result.keys.map((key, index) => ({
+      const keys = result.keys
+      
+      const newKeys: GeneratedKey[] = keys.map((key, index) => ({
         id: Date.now() + index,
         key,
         createdAt: new Date(result.generatedAt).toLocaleString()
       }))
       setGeneratedKeys(newKeys)
-      showToast('success', `成功生成 ${result.count} 条卡密`)
+      
+      // 第二步：自动写入数据库
+      setProgressText(`正在写入 ${keys.length} 条卡密到数据库...`)
+      const writeResult = await api.writeKeysToDb(keys)
+      
+      if (writeResult.insertedCount === keys.length) {
+        showToast('success', `成功生成并写入 ${writeResult.insertedCount} 条卡密`)
+      } else if (writeResult.insertedCount > 0) {
+        showToast('info', `生成 ${keys.length} 条，写入 ${writeResult.insertedCount} 条，${writeResult.duplicateCount} 条重复已跳过`)
+      } else {
+        showToast('error', `生成 ${keys.length} 条卡密，但全部重复未写入`)
+      }
     } catch (error: any) {
       console.error('生成卡密失败:', error)
       showToast('error', error.message || '生成卡密失败')
     } finally {
       setIsGenerating(false)
+      setProgressText('')
     }
   }
 
@@ -104,38 +125,6 @@ export const GenerateKeys: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     a.click()
     URL.revokeObjectURL(url)
     showToast('success', `已导出 ${generatedKeys.length} 条卡密`)
-  }
-
-  // 写入数据库
-  const handleWriteToDb = async () => {
-    if (generatedKeys.length === 0) {
-      showToast('error', '请先生成卡密')
-      return
-    }
-
-    setIsWritingToDb(true)
-    setWriteProgress('正在连接数据库...')
-    
-    try {
-      const keys = generatedKeys.map(k => k.key)
-      setWriteProgress(`正在写入 ${keys.length} 条卡密...`)
-      
-      const result = await api.writeKeysToDb(keys)
-      
-      if (result.insertedCount === keys.length) {
-        showToast('success', `成功写入 ${result.insertedCount} 条卡密到数据库`)
-      } else if (result.insertedCount > 0) {
-        showToast('info', `写入 ${result.insertedCount} 条，${result.duplicateCount} 条重复已跳过`)
-      } else {
-        showToast('error', '所有卡密均已存在，无新数据写入')
-      }
-    } catch (error: any) {
-      console.error('写入数据库失败:', error)
-      showToast('error', error.message || '写入数据库失败')
-    } finally {
-      setIsWritingToDb(false)
-      setWriteProgress('')
-    }
   }
 
   return (
@@ -237,11 +226,27 @@ export const GenerateKeys: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             <button 
               className={styles.generateButton}
               onClick={handleGenerate}
-              disabled={isGenerating || !prefix}
+              disabled={isGenerating || !prefix || dbConnected === false}
+              title={dbConnected === false ? '数据库未连接' : ''}
             >
-              <RefreshCw className={isGenerating ? styles.spinning : ''} size={18} />
-              <span>{isGenerating ? '生成中...' : '立即生成'}</span>
+              {isGenerating ? (
+                <>
+                  <RefreshCw className={styles.spinning} size={18} />
+                  <span>{progressText || '处理中...'}</span>
+                </>
+              ) : (
+                <>
+                  <Database size={18} />
+                  <span>立即生成</span>
+                </>
+              )}
             </button>
+            
+            {dbConnected === false && (
+              <div className={styles.warningText}>
+                数据库未连接，无法生成卡密
+              </div>
+            )}
           </motion.div>
 
           {/* 预览区域 */}
@@ -285,7 +290,7 @@ export const GenerateKeys: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             animate={{ opacity: 1, y: 0 }}
           >
             <div className={styles.resultsHeader}>
-              <h3>已生成 {generatedKeys.length} 条卡密</h3>
+              <h3>已生成并写入 {generatedKeys.length} 条卡密</h3>
               <div className={styles.actions}>
                 <button 
                   className={styles.actionButton} 
@@ -295,15 +300,6 @@ export const GenerateKeys: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 </button>
                 <button className={styles.actionButton} onClick={handleExport}>
                   <Download size={16} /> 导出TXT
-                </button>
-                <button 
-                  className={`${styles.actionButton} ${styles.primaryAction}`}
-                  onClick={handleWriteToDb}
-                  disabled={isWritingToDb || dbConnected === false}
-                  title={dbConnected === false ? '数据库未连接' : ''}
-                >
-                  <Database size={16} /> 
-                  {isWritingToDb ? writeProgress || '写入中...' : '写入数据库'}
                 </button>
               </div>
             </div>

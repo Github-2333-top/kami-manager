@@ -3,7 +3,7 @@ import type { Pool, PoolConnection } from 'mysql2/promise'
 
 /**
  * 外部数据库连接服务
- * 用于连接 114.66.49.176 上的 weiyintkj 表
+ * 用于连接 114.66.49.176 上的 weiyintkj 数据库的 ma_card 表
  */
 
 // 外部MySQL连接配置
@@ -97,7 +97,7 @@ export async function writeKeysToExternalDb(keys: string[]): Promise<{
 
     // 使用INSERT IGNORE来跳过重复的卡密
     const insertQuery = `
-      INSERT IGNORE INTO weiyintkj 
+      INSERT IGNORE INTO ma_card 
       (km, point, seconds, add_time, status, from_soft_id, from_admin_id) 
       VALUES ?
     `
@@ -159,7 +159,7 @@ export async function checkExistingKeys(keys: string[]): Promise<string[]> {
   
   try {
     const [rows] = await pool.query(
-      'SELECT km FROM weiyintkj WHERE km IN (?)',
+      'SELECT km FROM ma_card WHERE km IN (?)',
       [keys]
     ) as any
 

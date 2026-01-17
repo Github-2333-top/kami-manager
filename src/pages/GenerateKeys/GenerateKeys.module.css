@@ -212,6 +212,17 @@
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     animation: shine 3s infinite;
   }
+
+  .warningText {
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 6px;
+    color: #ef4444;
+    font-size: 0.8rem;
+    text-align: center;
+  }
   
   .previewBox {
     font-family: 'JetBrains Mono', monospace;
