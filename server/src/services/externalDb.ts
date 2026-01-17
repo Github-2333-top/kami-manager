@@ -13,6 +13,7 @@ const externalDbConfig = {
   user: process.env.EXTERNAL_DB_USER || 'weiyintkj',
   password: process.env.EXTERNAL_DB_PASSWORD || 'RWMMdzzdpfbxxMPw',
   database: process.env.EXTERNAL_DB_NAME || 'weiyintkj',
+  table: process.env.EXTERNAL_DB_TABLE || 'ma_card',
   waitForConnections: true,
   connectionLimit: 5,
   queueLimit: 0
@@ -97,7 +98,7 @@ export async function writeKeysToExternalDb(keys: string[]): Promise<{
 
     // 使用INSERT IGNORE来跳过重复的卡密
     const insertQuery = `
-      INSERT IGNORE INTO ma_card 
+      INSERT IGNORE INTO ${externalDbConfig.table} 
       (km, point, seconds, add_time, status, from_soft_id, from_admin_id) 
       VALUES ?
     `
@@ -159,7 +160,7 @@ export async function checkExistingKeys(keys: string[]): Promise<string[]> {
   
   try {
     const [rows] = await pool.query(
-      'SELECT km FROM ma_card WHERE km IN (?)',
+      `SELECT km FROM ${externalDbConfig.table} WHERE km IN (?)`,
       [keys]
     ) as any
 
